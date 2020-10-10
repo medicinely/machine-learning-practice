@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer  # 从Sklearn特征�
 df = pd.read_csv('SMSSpamCollection.txt', delimiter='\t', header=None)  # 分隔符为一个缩近，没有文件头
 y, X_train = df[0], df[1]
 
-vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer() # 使用前需要进行实例化
 X = vectorizer.fit_transform(X_train)  # X是一个数值向量,返回所有词语的TF-IDF的值（越大对所在文章越重要） 将训练数据转化为
 
 

@@ -50,31 +50,33 @@ def baseline_model():
 
 # Keras分类（模型名称，训练次数，每次训练的数据个数，verbose：0.不显示进度条/1.显示进度条/2.每个epoch显示一个进度条/）
 # 利用这个类我们就可以方便的调用sklearn包中的一些函数进行数据预处理和结果评估
-estimator = KerasClassifier(build_fn=baseline_model, epochs=20, batch_size=1, verbose=1)
+estimator = KerasClassifier(build_fn=baseline_model, epochs=20, batch_size=1, verbose=2)
+
 
 # evaluate
-# KFold类，一种交叉验证（n_splits把数据分成10份，shuffle打乱，重复）
-kfold = KFold(n_splits=10, shuffle=True, random_state=seed)  # 十次交叉验证
+# KFold类，一种交叉验证方法（n_splits把数据分成10份，shuffle打乱，重复）
+kfold = KFold(n_splits=10, shuffle=True, random_state=seed)  # 十次交叉验证（9次用来验证）
 result = cross_val_score(estimator, X, Y_onehot, cv=kfold)
-print('Accuracy of cross validation, mean %.2f, std %.2f' % (result.mean(), result.std()))
+print('Accuracy of cross validation, mean %.2f, std %.2f' % (result.mean(), result.std())) # 打印均值方差
 
 # save model
 estimator.fit(X, Y_onehot)
 model_json = estimator.model.to_json()
 with open("model.json", "w") as json_file:
-    json_file.write(model_json)
+    json_file.write(model_json)   # 保存模型
 
-estimator.model.save_weights('model.h5')
+estimator.model.save_weights('model.h5')  # 存入权重文件
 print('saved model to disk')
 
 # load model and use it for prediction
 json_file = open('model.json', 'r')
-loaded_model_json = json_file.read()
+loaded_model_json = json_file.read()  # 读入模型
 json_file.close()
 
-loaded_model = model_from_json(loaded_model_json)
-loaded_model.load_weights('model.h5')
+loaded_model = model_from_json(loaded_model_json)  # model_from_json加载模型
+loaded_model.load_weights('model.h5')  # 读取权重文件
 print('loaded model from disk')
+
 
 predicted = loaded_model.predict(X)
 print('predicted probability:' + str(predicted))
